@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>For Prekshu 💕</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #1a0510;
+    font-family: 'Quicksand', sans-serif;
+    touch-action: none;
+  }
+  #bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: radial-gradient(circle at 50% 20%, #4a0f2c 0%, #2b0a1e 45%, #12040d 100%);
+    overflow: hidden;
+  }
+  #hearts-container {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  #celebration-container {
+    position: fixed;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  #celebration-container.flash::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 45%, rgba(255, 230, 245, 0.42), rgba(255, 111, 165, 0.12) 34%, transparent 64%);
+    animation: revealFlash 1.1s ease forwards;
+  }
+  @keyframes revealFlash {
+    0% { opacity: 0; transform: scale(0.7); }
+    25% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.28); }
+  }
+  .firework-particle {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background: var(--color);
+    box-shadow: 0 0 12px var(--color), 0 0 24px rgba(255,255,255,0.35);
+    animation: fireworkBurst var(--duration) cubic-bezier(0.12, 0.75, 0.24, 1) forwards;
+  }
+  @keyframes fireworkBurst {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.35);
+    }
+    12% { opacity: 1; }
+    100% {
+      opacity: 0;
+      transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.08);
+    }
+  }
+  .celebration-heart {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    font-size: var(--size);
+    text-shadow: 0 0 14px rgba(255, 157, 203, 0.85), 0 0 26px rgba(255,255,255,0.45);
+    animation: heartCelebrate var(--duration) ease-out forwards;
+  }
+  @keyframes heartCelebrate {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.25) rotate(0deg);
+    }
+    14% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.15) rotate(-8deg);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.65) rotate(var(--rot));
+    }
+  }
+  .rose-petal {
+    position: absolute;
+    top: -10%;
+    left: var(--x);
+    font-size: var(--size);
+    opacity: 0;
+    filter: drop-shadow(0 0 10px rgba(255, 142, 185, 0.55));
+    animation: petalFall var(--duration) ease-in forwards;
+  }
+  @keyframes petalFall {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, -8vh, 0) rotate(0deg);
+    }
+    10% { opacity: 0.95; }
+    100% {
+      opacity: 0;
+      transform: translate3d(var(--drift), 112vh, 0) rotate(var(--rot));
+    }
+  }
+  .heart {
+    position: absolute;
+    bottom: -10%;
+    font-size: 20px;
+    opacity: 0.85;
+    animation: floatUp linear forwards;
+    filter: drop-shadow(0 0 6px rgba(255,120,170,0.6));
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.9; }
+    100% { transform: translateY(-115vh) translateX(var(--drift)) rotate(360deg); opacity: 0; }
+  }
+
+  canvas#three-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    opacity: 0.28;
+    filter: blur(14px) brightness(0.75);
+    transition: opacity 1.2s ease;
+    pointer-events: none;
+  }
+  canvas#three-canvas.visible {
+    opacity: 1;
+    filter: blur(0) brightness(1);
+    pointer-events: auto;
+  }
+  canvas#three-canvas.reveal-pulse {
+    animation: modelHeartbeat 1.6s ease-in-out 3;
+  }
+  @keyframes modelHeartbeat {
+    0%, 100% { transform: scale(1); }
+    18% { transform: scale(1.018); }
+    32% { transform: scale(1); }
+    48% { transform: scale(1.012); }
+  }
+
+  #loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #1a0510;
+    color: #ffd7e6;
+    text-align: center;
+    padding: 24px;
+    transition: opacity 0.6s ease;
+  }
+  #loading-screen .heart-pulse {
+    font-size: 46px;
+    animation: pulse 1.1s ease-in-out infinite;
+    margin-bottom: 18px;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.25); }
+  }
+  #loading-screen p {
+    margin: 4px 0;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+    opacity: 0.9;
+  }
+  #progress-track {
+    width: 70vw;
+    max-width: 320px;
+    height: 8px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.15);
+    overflow: hidden;
+    margin-top: 16px;
+  }
+  #progress-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #ff6fa5, #ff9ecb);
+    transition: width 0.2s ease;
+  }
+  #progress-pct {
+    margin-top: 8px;
+    font-size: 13px;
+    opacity: 0.75;
+  }
+
+  #intro-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+    background: rgba(15, 4, 10, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  #intro-screen.visible {
+    display: flex;
+    animation: fadeIn 0.8s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  #intro-screen .envelope {
+    font-size: 54px;
+    margin-bottom: 10px;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  #intro-screen h1 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 44px;
+    color: #ffd7e6;
+    margin: 6px 0;
+    text-shadow: 0 2px 18px rgba(255,111,165,0.5);
+  }
+  #intro-screen p.sub {
+    color: #ffe6ef;
+    font-size: 15px;
+    opacity: 0.85;
+    max-width: 320px;
+    margin: 6px auto 22px;
+  }
+  #open-btn {
+    border: none;
+    outline: none;
+    background: linear-gradient(135deg, #ff6fa5, #ff3d7f);
+    color: #fff;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 14px 34px;
+    border-radius: 40px;
+    box-shadow: 0 8px 24px rgba(255, 63, 127, 0.45);
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transform: scale(1);
+    transition: transform 0.15s ease;
+  }
+  #open-btn:active { transform: scale(0.94); }
+
+  #choice-screen, #tap-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+    background: rgba(15, 4, 10, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  #choice-screen.visible, #tap-screen.visible {
+    display: flex;
+    animation: fadeIn 0.8s ease;
+  }
+  #countdown-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+    background: rgba(15, 4, 10, 0.68);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  #countdown-screen.visible {
+    display: flex;
+    animation: fadeIn 0.45s ease;
+  }
+  #countdown-number {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(88px, 28vw, 150px);
+    line-height: 0.9;
+    color: #fff0f6;
+    text-shadow: 0 0 32px rgba(255, 111, 165, 0.85), 0 0 14px rgba(255,255,255,0.5);
+    animation: countdownPop 0.7s ease;
+  }
+  #countdown-text {
+    margin-top: 18px;
+    color: #ffe6ef;
+    font-size: 15px;
+    letter-spacing: 0.6px;
+    opacity: 0.86;
+  }
+  @keyframes countdownPop {
+    0% { opacity: 0; transform: scale(0.55); }
+    40% { opacity: 1; transform: scale(1.08); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  .choice-emoji {
+    font-size: 46px;
+    margin-bottom: 8px;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  #choice-screen h1, #tap-screen h1 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 36px;
+    line-height: 1.15;
+    color: #ffd7e6;
+    margin: 6px 0 4px;
+    text-shadow: 0 2px 18px rgba(255,111,165,0.5);
+  }
+  #choice-screen p.sub, #tap-screen p.tap-sub {
+    color: #ffe6ef;
+    font-size: 14px;
+    opacity: 0.8;
+    margin: 4px 0 22px;
+  }
+  .choice-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    width: 100%;
+    max-width: 320px;
+  }
+  .choice-btn {
+    border: 1.5px solid rgba(255,182,206,0.45);
+    outline: none;
+    background: linear-gradient(135deg, rgba(255,111,165,0.18), rgba(255,63,127,0.28));
+    color: #fff0f5;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    padding: 18px 10px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: transform 0.15s ease, background 0.2s ease;
+  }
+  .choice-btn span {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.75;
+  }
+  .choice-btn:active {
+    transform: scale(0.93);
+    background: linear-gradient(135deg, rgba(255,111,165,0.35), rgba(255,63,127,0.5));
+  }
+  #tap-target-count { color: #ffb0cd; }
+  #tap-heart-btn {
+    border: none;
+    outline: none;
+    background: none;
+    font-size: 110px;
+    line-height: 1;
+    cursor: pointer;
+    filter: drop-shadow(0 6px 22px rgba(255,63,127,0.55));
+    transition: transform 0.08s ease;
+    animation: heartIdle 1.8s ease-in-out infinite;
+    padding: 10px;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  #tap-heart-btn:active { transform: scale(0.82); }
+  @keyframes heartIdle {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+  #tap-heart-btn.tap-bump {
+    animation: tapBump 0.28s ease !important;
+  }
+  @keyframes tapBump {
+    0% { transform: scale(1); }
+    35% { transform: scale(1.35) rotate(-6deg); }
+    70% { transform: scale(0.9) rotate(4deg); }
+    100% { transform: scale(1); }
+  }
+  #tap-counter {
+    margin-top: 10px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff0f5;
+    letter-spacing: 0.5px;
+  }
+  #tap-progress-track {
+    width: 70vw;
+    max-width: 300px;
+    height: 8px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.15);
+    overflow: hidden;
+    margin-top: 14px;
+  }
+  #tap-progress-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #ff6fa5, #ff9ecb);
+    transition: width 0.2s ease;
+  }
+
+  #message-overlay {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-height: 90vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: calc(40px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, rgba(18, 4, 11, 0.75) 0%, rgba(18, 4, 11, 0.52) 40%, rgba(18, 4, 11, 0.16) 74%, rgba(18, 4, 11, 0) 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 22px, #000 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 22px, #000 100%);
+    pointer-events: none;
+    touch-action: pan-y;
+    opacity: 0;
+    transition: opacity 1.2s ease, transform 1.2s ease;
+    transform: translateY(16px);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 173, 205, 0.55) transparent;
+  }
+  #message-overlay::-webkit-scrollbar {
+    width: 4px;
+  }
+  #message-overlay::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  #message-overlay::-webkit-scrollbar-thumb {
+    background: rgba(255, 173, 205, 0.5);
+    border-radius: 4px;
+  }
+  #message-overlay.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  #message-overlay.love-glow h1 {
+    animation: loveTitlePulse 1.6s ease-in-out 3;
+  }
+  @keyframes loveTitlePulse {
+    0%, 100% { transform: scale(1); text-shadow: 0 4px 30px rgba(255, 90, 150, 0.75), 0 0 8px rgba(255,255,255,0.35); }
+    28% { transform: scale(1.045); text-shadow: 0 4px 40px rgba(255, 90, 150, 0.95), 0 0 22px rgba(255,255,255,0.7); }
+    44% { transform: scale(1); }
+  }
+  #message-overlay h1 {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(32px, 11vw, 58px);
+    line-height: 1.25;
+    padding-top: 0.15em;
+    color: #fff0f5;
+    margin: 0;
+    text-shadow: 0 4px 30px rgba(255, 90, 150, 0.75), 0 0 8px rgba(255,255,255,0.35);
+  }
+  #message-overlay .name {
+    color: #ffb0cd;
+  }
+  #message-overlay .ring {
+    display: inline-block;
+    margin-left: 0.12em;
+    filter: drop-shadow(0 2px 10px rgba(255, 200, 120, 0.55));
+  }
+  #message-overlay .flourish {
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: #ffb8d2;
+    opacity: 0.65;
+    margin-bottom: 6px;
+  }
+  #message-overlay p {
+    margin: 10px 0 0;
+    font-size: 14px;
+    color: #ffe3ec;
+    opacity: 0.9;
+    max-width: 340px;
+  }
+  #message-overlay .romantic-line {
+    min-height: 42px;
+    margin-top: 12px;
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(25px, 7vw, 38px);
+    line-height: 1.05;
+    color: #ffe6f0;
+    text-shadow: 0 3px 22px rgba(255, 111, 165, 0.75);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+  #message-overlay .romantic-line.switching {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  #love-letter {
+    min-height: 74px;
+    margin-top: 10px;
+    max-width: 360px;
+    color: #fff3f8;
+    font-size: 14px;
+    line-height: 1.45;
+    text-shadow: 0 2px 16px rgba(255, 111, 165, 0.45);
+  }
+  #promise-card, #forever-question, #smile-jar {
+    display: none;
+    width: min(360px, 92vw);
+    margin-top: 14px;
+    padding: 16px 18px;
+    border: 1px solid rgba(255, 198, 218, 0.32);
+    border-radius: 18px;
+    background: rgba(35, 6, 19, 0.55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 10px 34px rgba(0,0,0,0.24), inset 0 0 20px rgba(255, 111, 165, 0.08);
+    color: #ffeaf2;
+    font-size: 13px;
+    line-height: 1.5;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  #promise-card.visible, #forever-question.visible, #smile-jar.visible {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  #promise-card strong, #forever-question strong, #smile-jar strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #ffb8d2;
+    font-size: 12px;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+  }
+  #surprise-btn {
+    display: none;
+    margin-top: 14px;
+    border: none;
+    outline: none;
+    border-radius: 999px;
+    padding: 11px 18px;
+    background: linear-gradient(135deg, #fff0f6, #ff87b6);
+    color: #7b123b;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 8px 26px rgba(255, 88, 145, 0.42);
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  #surprise-btn.visible {
+    display: inline-block;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  #surprise-btn:active, .forever-btn:active {
+    transform: scale(0.94);
+  }
+  .forever-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .forever-btn {
+    border: 1px solid rgba(255, 214, 229, 0.44);
+    border-radius: 999px;
+    padding: 9px 14px;
+    background: rgba(255,255,255,0.12);
+    color: #fff5f9;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  #smile-note {
+    min-height: 50px;
+    margin: 8px 0 10px;
+    color: #fff6fa;
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(25px, 7vw, 36px);
+    line-height: 1.05;
+    text-shadow: 0 3px 22px rgba(255, 111, 165, 0.72);
+    transition: opacity 0.32s ease, transform 0.32s ease;
+  }
+  #smile-note.switching {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  #smile-jar-count {
+    display: block;
+    margin-top: 8px;
+    color: #ffd2e3;
+    font-size: 11px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    opacity: 0.72;
+  }
+  #message-overlay .tap-hint {
+    margin-top: 14px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0.55;
+  }
+
+  #top-hint {
+    position: fixed;
+    top: calc(20px + env(safe-area-inset-top));
+    left: 0;
+    right: 0;
+    z-index: 5;
+    text-align: center;
+    color: #ffd7e6;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 1s ease;
+    letter-spacing: 0.5px;
+    pointer-events: none;
+  }
+  #top-hint.visible { opacity: 0.7; }
+</style>
+</head>
+<body>
+
+  <div id="bg"></div>
+  <div id="hearts-container"></div>
+  <div id="celebration-container"></div>
+  <canvas id="three-canvas"></canvas>
+
+  <div id="loading-screen">
+    <div class="heart-pulse">💗</div>
+    <p>Preparing something special…</p>
+    <div id="progress-track"><div id="progress-bar"></div></div>
+    <div id="progress-pct">0%</div>
+  </div>
+
+  <div id="intro-screen">
+    <div class="envelope">💌</div>
+    <h1>For Prekshu</h1>
+    <p class="sub">I made you a little something. Turn your sound up, hold your phone steady, and tap below.</p>
+    <button id="open-btn">Open your surprise</button>
+  </div>
+
+  <div id="choice-screen">
+    <div class="choice-emoji">💕</div>
+    <h1>How many times do you<br>want to hear "I love you"?</h1>
+    <p class="sub">Pick one, Prekshu…</p>
+    <div class="choice-grid">
+      <button class="choice-btn" data-count="10">10<span>just a little</span></button>
+      <button class="choice-btn" data-count="25">25<span>quite a bit</span></button>
+      <button class="choice-btn" data-count="50">50<span>so much</span></button>
+      <button class="choice-btn" data-count="100">100<span>endlessly</span></button>
+    </div>
+  </div>
+
+  <div id="tap-screen">
+    <h1>Tap the heart <span id="tap-target-count">10</span> times</h1>
+    <button id="tap-heart-btn">💗</button>
+    <div id="tap-counter">0 / 10</div>
+    <div id="tap-progress-track"><div id="tap-progress-bar"></div></div>
+    <p class="tap-sub">for every tap, I love you a little more</p>
+  </div>
+
+  <div id="countdown-screen">
+    <div id="countdown-number">3</div>
+    <div id="countdown-text">your surprise is opening...</div>
+  </div>
+
+  <div id="top-hint">✨ drag to spin us around ✨</div>
+
+  <div id="message-overlay">
+    <div class="flourish">✦ ✦ ✦</div>
+    <h1>I Love You, <span class="name">Prekshu</span><span class="ring">💍</span></h1>
+    <p>Every single day with you feels like this — warm, soft, and exactly where I want to be. Here's to forever with you, Prekshu.</p>
+    <div id="romantic-line" class="romantic-line">Meri har dhadkan mein bas tum ho</div>
+    <div id="love-letter"></div>
+    <div id="promise-card">
+      <strong>My promise</strong>
+      Prekshu, I promise I will always choose you, protect your smile, and love you more every single day.
+    </div>
+    <button id="surprise-btn">One more surprise 💝</button>
+    <div id="forever-question">
+      <strong>One cute question</strong>
+      Will you keep smiling with me forever?
+      <div class="forever-actions">
+        <button class="forever-btn" type="button">Yes 💗</button>
+        <button class="forever-btn" type="button">Always 💍</button>
+      </div>
+    </div>
+    <div id="smile-jar">
+      <strong>Prekshu smile jar</strong>
+      <div id="smile-note">Open one tiny reason I adore you.</div>
+      <button id="smile-note-btn" class="forever-btn" type="button">Open a note ✨</button>
+      <span id="smile-jar-count">0 / 7 love notes opened</span>
+    </div>
+    <div class="tap-hint">tap the heart for more love · 💗</div>
+  </div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const MODEL_URL = encodeURI('couple 3d model (1).glb');
+const LOVE_SOUND_URL = encodeURI('love-you-song.mp3');
+const BACKGROUND_SONG_URL = encodeURI('background-song.mp3');
+
+const canvas = document.getElementById('three-canvas');
+const loadingScreen = document.getElementById('loading-screen');
+const progressBar = document.getElementById('progress-bar');
+const progressPct = document.getElementById('progress-pct');
+const introScreen = document.getElementById('intro-screen');
+const openBtn = document.getElementById('open-btn');
+const choiceScreen = document.getElementById('choice-screen');
+const choiceBtns = document.querySelectorAll('.choice-btn');
+const tapScreen = document.getElementById('tap-screen');
+const tapHeartBtn = document.getElementById('tap-heart-btn');
+const tapCounterEl = document.getElementById('tap-counter');
+const tapProgressBar = document.getElementById('tap-progress-bar');
+const tapTargetCountEl = document.getElementById('tap-target-count');
+const countdownScreen = document.getElementById('countdown-screen');
+const countdownNumber = document.getElementById('countdown-number');
+const messageOverlay = document.getElementById('message-overlay');
+const romanticLine = document.getElementById('romantic-line');
+const loveLetter = document.getElementById('love-letter');
+const promiseCard = document.getElementById('promise-card');
+const surpriseBtn = document.getElementById('surprise-btn');
+const foreverQuestion = document.getElementById('forever-question');
+const foreverBtns = document.querySelectorAll('#forever-question .forever-btn');
+const smileJar = document.getElementById('smile-jar');
+const smileNote = document.getElementById('smile-note');
+const smileNoteBtn = document.getElementById('smile-note-btn');
+const smileJarCount = document.getElementById('smile-jar-count');
+const topHint = document.getElementById('top-hint');
+const heartsContainer = document.getElementById('hearts-container');
+const celebrationContainer = document.getElementById('celebration-container');
+
+const loveSound = new Audio(LOVE_SOUND_URL);
+loveSound.preload = 'auto';
+loveSound.volume = 0.95;
+
+const backgroundSong = new Audio(BACKGROUND_SONG_URL);
+backgroundSong.preload = 'auto';
+backgroundSong.loop = true;
+backgroundSong.volume = 0.22;
+
+let backgroundStarted = false;
+
+function startBackgroundSong() {
+  if (backgroundStarted) return;
+  backgroundStarted = true;
+  backgroundSong.play().catch(() => {
+    backgroundStarted = false;
+  });
+}
+
+function playLoveSound() {
+  const sound = loveSound.cloneNode();
+  sound.volume = loveSound.volume;
+  sound.play().catch(() => {});
+}
+
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(
+  40,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  100
+);
+camera.position.set(0, 1.4, 4.2);
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+const hemi = new THREE.HemisphereLight(0xffe3ee, 0x2b0a1e, 1.1);
+scene.add(hemi);
+
+const key = new THREE.DirectionalLight(0xffd7e6, 2.0);
+key.position.set(3, 5, 4);
+scene.add(key);
+
+const rim = new THREE.DirectionalLight(0xff85b3, 1.2);
+rim.position.set(-4, 2, -3);
+scene.add(rim);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 1.1;
+controls.enablePan = false;
+controls.minDistance = 1.5;
+controls.maxDistance = 8;
+controls.minPolarAngle = Math.PI * 0.18;
+controls.maxPolarAngle = Math.PI * 0.62;
+controls.target.set(0, 1, 0);
+
+let modelRoot = null;
+const modelBox = new THREE.Box3();
+const modelSize = new THREE.Vector3();
+const modelCenter = new THREE.Vector3();
+
+function frameModel() {
+  if (!modelRoot) return;
+
+  modelBox.setFromObject(modelRoot);
+  modelBox.getSize(modelSize);
+  modelBox.getCenter(modelCenter);
+
+  const fitPadding = window.innerWidth < 640 ? 1.55 : 1.32;
+  const fov = THREE.MathUtils.degToRad(camera.fov);
+  const aspect = Math.max(camera.aspect, 0.01);
+  const distanceForHeight = (modelSize.y / 2) / Math.tan(fov / 2);
+  const distanceForWidth = (modelSize.x / 2) / (Math.tan(fov / 2) * aspect);
+  const distance = Math.max(distanceForHeight, distanceForWidth, modelSize.z * 1.25) * fitPadding;
+
+  controls.target.copy(modelCenter);
+  controls.target.y += modelSize.y * 0.02;
+  camera.position.set(modelCenter.x, modelCenter.y + modelSize.y * 0.06, modelCenter.z + distance);
+  camera.near = Math.max(distance / 100, 0.01);
+  camera.far = Math.max(distance * 100, 100);
+  camera.updateProjectionMatrix();
+  controls.update();
+}
+
+const loader = new GLTFLoader();
+loader.load(
+  MODEL_URL,
+  (gltf) => {
+    modelRoot = gltf.scene;
+
+    const box = new THREE.Box3().setFromObject(modelRoot);
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
+
+    const maxDim = Math.max(size.x, size.y, size.z) || 1;
+    const scale = 2.2 / maxDim;
+    modelRoot.scale.setScalar(scale);
+
+    box.setFromObject(modelRoot);
+    box.getCenter(center);
+    modelRoot.position.x -= center.x;
+    modelRoot.position.z -= center.z;
+    modelRoot.position.y -= box.min.y;
+
+    modelRoot.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = false;
+        child.receiveShadow = false;
+        if (child.material) child.material.envMapIntensity = 1.0;
+      }
+    });
+
+    scene.add(modelRoot);
+
+    frameModel();
+
+    finishLoading();
+  },
+  (xhr) => {
+    if (xhr.total) {
+      const pct = Math.min(100, Math.round((xhr.loaded / xhr.total) * 100));
+      progressBar.style.width = pct + '%';
+      progressPct.textContent = pct + '%';
+    } else {
+      const mb = (xhr.loaded / (1024 * 1024)).toFixed(1);
+      progressPct.textContent = mb + ' MB loaded…';
+    }
+  },
+  (err) => {
+    progressPct.textContent = 'Could not load the model 💔';
+    console.error(err);
+  }
+);
+
+function finishLoading() {
+  progressBar.style.width = '100%';
+  progressPct.textContent = '100%';
+  setTimeout(() => {
+    loadingScreen.style.opacity = '0';
+    setTimeout(() => { loadingScreen.style.display = 'none'; }, 650);
+    introScreen.classList.add('visible');
+  }, 350);
+}
+
+openBtn.addEventListener('click', () => {
+  startBackgroundSong();
+  introScreen.classList.remove('visible');
+  setTimeout(() => {
+    choiceScreen.classList.add('visible');
+  }, 300);
+});
+
+let targetTaps = 0;
+let currentTaps = 0;
+let romanticLineInterval = null;
+let surpriseOpened = false;
+let finalFlowStarted = false;
+const romanticLines = [
+  'Meri har dhadkan mein bas tum ho',
+  'Prekshu, tum meri sabse pyari feeling ho',
+  'Tum smile karo to mera din ban jata hai',
+  'Main tumhe aaj, kal, aur hamesha choose karunga',
+  'Tum ho to sab kuch aur bhi khoobsurat lagta hai'
+];
+const loveLetterText = 'Dear Prekshu, jab tum mere saath hoti ho na, sab kuch soft, calm aur perfect lagta hai. Tum meri favorite smile, favorite feeling, aur meri sabse pyari surprise ho.';
+const smileNotes = [
+  'Tumhari smile meri favorite notification hai.',
+  'Jab tum hasti ho, dil bilkul shaant ho jata hai.',
+  'Tumhari aankhon mein mujhe apna forever dikhta hai.',
+  'Tum simple si baat ko bhi special bana deti ho.',
+  'Mujhe tumhara cute gussa bhi pyara lagta hai.',
+  'Tum mere din ka sabse beautiful part ho.',
+  'Prekshu, tum meri dua ka sabse pyaara answer ho.'
+];
+let smileNoteIndex = 0;
+
+choiceBtns.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    targetTaps = parseInt(btn.dataset.count, 10);
+    currentTaps = 0;
+    tapTargetCountEl.textContent = targetTaps;
+    tapCounterEl.textContent = `0 / ${targetTaps}`;
+    tapProgressBar.style.width = '0%';
+    choiceScreen.classList.remove('visible');
+    setTimeout(() => {
+      tapScreen.classList.add('visible');
+    }, 300);
+  });
+});
+
+tapHeartBtn.addEventListener('click', () => {
+  if (currentTaps >= targetTaps) return;
+  currentTaps++;
+  startBackgroundSong();
+  playLoveSound();
+  tapCounterEl.textContent = `${currentTaps} / ${targetTaps}`;
+  tapProgressBar.style.width = Math.round((currentTaps / targetTaps) * 100) + '%';
+
+  tapHeartBtn.classList.remove('tap-bump');
+  void tapHeartBtn.offsetWidth;
+  tapHeartBtn.classList.add('tap-bump');
+  spawnHeart();
+
+  if (currentTaps >= targetTaps) {
+    setTimeout(() => {
+      tapScreen.classList.remove('visible');
+      setTimeout(startRevealCountdown, 300);
+    }, 500);
+  }
+});
+
+function startRevealCountdown() {
+  if (finalFlowStarted) return;
+  finalFlowStarted = true;
+  let count = 3;
+  countdownNumber.textContent = count;
+  countdownScreen.classList.add('visible');
+  burstHearts(8);
+
+  const countdownInterval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      countdownNumber.textContent = count;
+      countdownNumber.style.animation = 'none';
+      void countdownNumber.offsetWidth;
+      countdownNumber.style.animation = 'countdownPop 0.7s ease';
+      burstHearts(5);
+      return;
+    }
+
+    clearInterval(countdownInterval);
+    countdownNumber.textContent = 'Love';
+    countdownNumber.style.animation = 'none';
+    void countdownNumber.offsetWidth;
+    countdownNumber.style.animation = 'countdownPop 0.7s ease';
+    setTimeout(() => {
+      countdownScreen.classList.remove('visible');
+      revealFinalMessage();
+    }, 650);
+  }, 900);
+}
+
+function revealFinalMessage() {
+  canvas.classList.add('visible');
+  canvas.classList.add('reveal-pulse');
+  messageOverlay.classList.add('visible');
+  messageOverlay.classList.add('love-glow');
+  topHint.classList.add('visible');
+  launchCelebration();
+  startRomanticLines();
+  startPetalShower();
+  typeLoveLetter();
+  setTimeout(() => promiseCard.classList.add('visible'), 3600);
+  setTimeout(() => surpriseBtn.classList.add('visible'), 5200);
+  burstHearts(18);
+  startAmbientHearts();
+  setTimeout(() => {
+    canvas.classList.remove('reveal-pulse');
+    messageOverlay.classList.remove('love-glow');
+  }, 5200);
+}
+
+messageOverlay.addEventListener('click', () => burstHearts(10));
+surpriseBtn.addEventListener('click', (event) => {
+  event.stopPropagation();
+  if (surpriseOpened) {
+    launchCelebration();
+    burstHearts(18);
+    return;
+  }
+  surpriseOpened = true;
+  surpriseBtn.textContent = 'You are my forever 💞';
+  foreverQuestion.classList.add('visible');
+  setTimeout(() => smileJar.classList.add('visible'), 700);
+  launchCelebration();
+  startPetalShower();
+  burstHearts(28);
+});
+
+foreverBtns.forEach((btn) => {
+  btn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    btn.textContent = btn.textContent.includes('Always') ? 'Forever 💍' : 'Yesss 💗';
+    launchCelebration();
+    burstHearts(36);
+    createFirework(50, 35);
+    startPetalShower();
+  });
+});
+
+smileNoteBtn.addEventListener('click', (event) => {
+  event.stopPropagation();
+  const note = smileNotes[smileNoteIndex % smileNotes.length];
+  smileNote.classList.add('switching');
+
+  setTimeout(() => {
+    smileNote.textContent = note;
+    smileNote.classList.remove('switching');
+  }, 320);
+
+  smileNoteIndex++;
+  const openedCount = Math.min(smileNoteIndex, smileNotes.length);
+  smileJarCount.textContent = `${openedCount} / ${smileNotes.length} love notes opened`;
+  smileNoteBtn.textContent = smileNoteIndex >= smileNotes.length ? 'Read again 💗' : 'Open next note ✨';
+  burstHearts(14);
+  createFirework(50, 42);
+
+  if (smileNoteIndex === smileNotes.length) {
+    romanticLine.textContent = 'Ab bas ek kaam: Prekshu, please smile 💗';
+    launchCelebration();
+    startPetalShower();
+  }
+});
+
+function typeLoveLetter() {
+  loveLetter.textContent = '';
+  let index = 0;
+  const typeInterval = setInterval(() => {
+    loveLetter.textContent += loveLetterText.charAt(index);
+    index++;
+    if (index >= loveLetterText.length) clearInterval(typeInterval);
+  }, 34);
+}
+
+function spawnHeart(x) {
+  const el = document.createElement('div');
+  el.className = 'heart';
+  const emojis = ['💗', '💕', '💖', '💘', '❤️'];
+  el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+  const left = x !== undefined ? x : Math.random() * 100;
+  const drift = (Math.random() * 140 - 70) + 'px';
+  const duration = 4 + Math.random() * 3.5;
+  const size = 14 + Math.random() * 18;
+  el.style.left = left + '%';
+  el.style.fontSize = size + 'px';
+  el.style.setProperty('--drift', drift);
+  el.style.animationDuration = duration + 's';
+  heartsContainer.appendChild(el);
+  setTimeout(() => el.remove(), duration * 1000 + 200);
+}
+
+function burstHearts(count) {
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => spawnHeart(), i * 60);
+  }
+}
+
+function launchCelebration() {
+  celebrationContainer.classList.add('flash');
+  setTimeout(() => celebrationContainer.classList.remove('flash'), 1200);
+
+  const bursts = [
+    { x: 24, y: 20, delay: 80 },
+    { x: 76, y: 18, delay: 220 },
+    { x: 50, y: 30, delay: 420 },
+    { x: 20, y: 48, delay: 700 },
+    { x: 80, y: 46, delay: 900 },
+    { x: 50, y: 58, delay: 1160 }
+  ];
+
+  bursts.forEach((burst) => {
+    setTimeout(() => {
+      createFirework(burst.x, burst.y);
+      createCelebrationHearts(burst.x, burst.y);
+    }, burst.delay);
+  });
+}
+
+function startRomanticLines() {
+  if (romanticLineInterval) return;
+  let index = 0;
+  romanticLine.textContent = romanticLines[index];
+  romanticLineInterval = setInterval(() => {
+    index = (index + 1) % romanticLines.length;
+    romanticLine.classList.add('switching');
+    setTimeout(() => {
+      romanticLine.textContent = romanticLines[index];
+      romanticLine.classList.remove('switching');
+    }, 450);
+  }, 3300);
+}
+
+function startPetalShower() {
+  const petalEmojis = ['🌹', '🌸', '💗', '✨'];
+  for (let i = 0; i < 48; i++) {
+    setTimeout(() => {
+      const el = document.createElement('span');
+      el.className = 'rose-petal';
+      el.textContent = petalEmojis[Math.floor(Math.random() * petalEmojis.length)];
+      el.style.setProperty('--x', Math.random() * 100 + '%');
+      el.style.setProperty('--drift', (Math.random() * 180 - 90) + 'px');
+      el.style.setProperty('--rot', (Math.random() * 540 - 270) + 'deg');
+      el.style.setProperty('--size', 16 + Math.random() * 18 + 'px');
+      el.style.setProperty('--duration', 4200 + Math.random() * 2200 + 'ms');
+      celebrationContainer.appendChild(el);
+      setTimeout(() => el.remove(), 6800);
+    }, i * 150);
+  }
+}
+
+function createFirework(x, y) {
+  const colors = ['#fff2a8', '#ff78ad', '#ff3d7f', '#9ee7ff', '#d6a8ff', '#ffffff'];
+  const pieces = 30;
+
+  for (let i = 0; i < pieces; i++) {
+    const angle = (Math.PI * 2 * i) / pieces + Math.random() * 0.28;
+    const distance = 60 + Math.random() * 110;
+    const el = document.createElement('span');
+    el.className = 'firework-particle';
+    el.style.setProperty('--x', x + '%');
+    el.style.setProperty('--y', y + '%');
+    el.style.setProperty('--dx', Math.cos(angle) * distance + 'px');
+    el.style.setProperty('--dy', Math.sin(angle) * distance + 'px');
+    el.style.setProperty('--size', 3 + Math.random() * 4 + 'px');
+    el.style.setProperty('--duration', 760 + Math.random() * 420 + 'ms');
+    el.style.setProperty('--color', colors[Math.floor(Math.random() * colors.length)]);
+    celebrationContainer.appendChild(el);
+    setTimeout(() => el.remove(), 1300);
+  }
+}
+
+function createCelebrationHearts(x, y) {
+  const emojis = ['💗', '💕', '💖', '💘', '❤️'];
+  for (let i = 0; i < 14; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 50 + Math.random() * 150;
+    const el = document.createElement('span');
+    el.className = 'celebration-heart';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.setProperty('--x', x + '%');
+    el.style.setProperty('--y', y + '%');
+    el.style.setProperty('--dx', Math.cos(angle) * distance + 'px');
+    el.style.setProperty('--dy', Math.sin(angle) * distance - 90 + 'px');
+    el.style.setProperty('--rot', (Math.random() * 120 - 60) + 'deg');
+    el.style.setProperty('--size', 18 + Math.random() * 20 + 'px');
+    el.style.setProperty('--duration', 1100 + Math.random() * 700 + 'ms');
+    celebrationContainer.appendChild(el);
+    setTimeout(() => el.remove(), 2100);
+  }
+}
+
+let ambientInterval = null;
+function startAmbientHearts() {
+  if (ambientInterval) return;
+  ambientInterval = setInterval(() => spawnHeart(), 900);
+}
+
+function onResize() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+  frameModel();
+}
+window.addEventListener('resize', onResize);
+window.addEventListener('orientationchange', () => setTimeout(onResize, 200));
+
+const clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  if (modelRoot) {
+    modelRoot.position.y += 0;
+    modelRoot.rotation.y += 0;
+  }
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>
