@@ -28,6 +28,59 @@
     background: radial-gradient(circle at 50% 20%, #4a0f2c 0%, #2b0a1e 45%, #12040d 100%);
     overflow: hidden;
   }
+  #stars-container {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .star {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background: #fff8fb;
+    opacity: var(--o);
+    box-shadow: 0 0 4px rgba(255, 235, 245, 0.8);
+    animation: starTwinkle var(--dur) ease-in-out infinite;
+    animation-delay: var(--delay);
+  }
+  @keyframes starTwinkle {
+    0%, 100% { opacity: var(--o); transform: scale(1); }
+    50% { opacity: 0.15; transform: scale(0.7); }
+  }
+  .shooting-star {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.9);
+    opacity: 0;
+    animation: shootAcross 1.5s linear forwards;
+  }
+  .shooting-star::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 110px;
+    height: 1px;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0.85), transparent);
+    transform: translateY(-50%) rotate(-32deg);
+    transform-origin: right center;
+  }
+  @keyframes shootAcross {
+    0% { opacity: 0; transform: translate(0, 0); }
+    10% { opacity: 1; }
+    75% { opacity: 1; }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)); }
+  }
   #hearts-container {
     position: fixed;
     inset: 0;
@@ -606,28 +659,125 @@
     font-weight: 800;
     cursor: pointer;
   }
-  #smile-note {
-    min-height: 50px;
-    margin: 8px 0 10px;
-    color: #fff6fa;
-    font-family: 'Great Vibes', cursive;
-    font-size: clamp(25px, 7vw, 36px);
-    line-height: 1.05;
-    text-shadow: 0 3px 22px rgba(255, 111, 165, 0.72);
-    transition: opacity 0.32s ease, transform 0.32s ease;
+  .flip-card {
+    width: min(300px, 84vw);
+    height: 128px;
+    margin: 10px auto 4px;
+    perspective: 1200px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
   }
-  #smile-note.switching {
-    opacity: 0;
-    transform: translateY(8px) scale(0.98);
+  .flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.65s cubic-bezier(0.45, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+  .flip-card.flipped .flip-card-inner {
+    transform: rotateY(180deg);
+  }
+  .flip-card-front, .flip-card-back {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
+    border-radius: 16px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border: 1px solid rgba(255, 198, 218, 0.4);
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(18px, 5.6vw, 25px);
+    line-height: 1.25;
+    text-shadow: 0 2px 14px rgba(255, 111, 165, 0.5);
+  }
+  .flip-card-front {
+    background: linear-gradient(135deg, rgba(255, 111, 165, 0.24), rgba(255, 63, 127, 0.34));
+    color: #ffeaf2;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .flip-card-front .flip-emoji {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 26px;
+  }
+  .flip-card-back {
+    background: linear-gradient(135deg, rgba(255, 240, 246, 0.96), rgba(255, 210, 227, 0.96));
+    color: #7b123b;
+    transform: rotateY(180deg);
   }
   #smile-jar-count {
     display: block;
-    margin-top: 8px;
+    margin-top: 10px;
     color: #ffd2e3;
     font-size: 11px;
     letter-spacing: 0.6px;
     text-transform: uppercase;
     opacity: 0.72;
+  }
+  #together-counter {
+    width: min(360px, 92vw);
+    margin-top: 14px;
+    padding: 16px 18px;
+    border: 1px solid rgba(255, 198, 218, 0.32);
+    border-radius: 18px;
+    background: rgba(35, 6, 19, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 10px 34px rgba(0,0,0,0.24), inset 0 0 20px rgba(255, 111, 165, 0.08);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  #together-counter.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  #together-counter strong {
+    display: block;
+    margin-bottom: 10px;
+    color: #ffb8d2;
+    font-size: 12px;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+  }
+  .together-grid {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  .together-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 52px;
+    padding: 8px 4px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .together-unit span {
+    font-size: 19px;
+    font-weight: 700;
+    color: #fff0f5;
+    font-variant-numeric: tabular-nums;
+  }
+  .together-unit small {
+    margin-top: 2px;
+    font-size: 9px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #ffd2e3;
+    opacity: 0.75;
+  }
+  #together-since {
+    display: block;
+    margin-top: 10px;
+    font-size: 11px;
+    color: #ffd2e3;
+    opacity: 0.65;
   }
   #message-overlay .tap-hint {
     margin-top: 14px;
@@ -652,14 +802,106 @@
     pointer-events: none;
   }
   #top-hint.visible { opacity: 0.7; }
+
+  #music-toggle {
+    position: fixed;
+    top: calc(14px + env(safe-area-inset-top));
+    right: calc(14px + env(safe-area-inset-right));
+    z-index: 6;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(255, 198, 218, 0.4);
+    border-radius: 50%;
+    background: rgba(30, 5, 17, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #ffe6ef;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+    transition: opacity 0.5s ease, transform 0.15s ease;
+    opacity: 0;
+    pointer-events: none;
+  }
+  #music-toggle.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #music-toggle:active { transform: scale(0.88); }
+  #music-toggle.muted { animation: none; }
+  #music-toggle:not(.muted) { animation: musicPulse 2.2s ease-in-out infinite; }
+  @keyframes musicPulse {
+    0%, 100% { box-shadow: 0 6px 18px rgba(0,0,0,0.28), 0 0 0 0 rgba(255,111,165,0.35); }
+    50% { box-shadow: 0 6px 18px rgba(0,0,0,0.28), 0 0 0 6px rgba(255,111,165,0); }
+  }
+
+  #kiss-btn {
+    display: none;
+    margin-top: 14px;
+    border: 1px solid rgba(255, 214, 229, 0.44);
+    outline: none;
+    border-radius: 999px;
+    padding: 10px 18px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff5f9;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 12.5px;
+    font-weight: 800;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  #kiss-btn.visible {
+    display: inline-block;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  #kiss-btn:active { transform: scale(0.92); }
+  .kiss-particle {
+    position: fixed;
+    z-index: 4;
+    font-size: var(--size);
+    left: var(--x);
+    top: var(--y);
+    pointer-events: none;
+    text-shadow: 0 0 14px rgba(255, 111, 165, 0.85);
+    animation: kissFloat var(--duration) ease-out forwards;
+  }
+  @keyframes kissFloat {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4) rotate(0deg); }
+    16% { opacity: 1; transform: translate(-50%, -50%) scale(1.1) rotate(-10deg); }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.7) rotate(var(--rot)); }
+  }
+  .kiss-mark {
+    position: fixed;
+    z-index: 4;
+    left: var(--x);
+    top: var(--y);
+    font-size: var(--size);
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5) rotate(var(--rot));
+    animation: kissStamp 1.4s ease-out forwards;
+  }
+  @keyframes kissStamp {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3) rotate(var(--rot)); }
+    18% { opacity: 0.9; transform: translate(-50%, -50%) scale(1) rotate(var(--rot)); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(1) rotate(var(--rot)); }
+  }
 </style>
 </head>
 <body>
 
   <div id="bg"></div>
+  <div id="stars-container"></div>
   <div id="hearts-container"></div>
   <div id="celebration-container"></div>
   <canvas id="three-canvas"></canvas>
+  <button id="music-toggle" aria-label="Toggle music">🔇</button>
 
   <div id="loading-screen">
     <div class="heart-pulse">💗</div>
@@ -708,11 +950,22 @@
     <p>Every single day with you feels like this — warm, soft, and exactly where I want to be. Here's to forever with you, Prekshu.</p>
     <div id="romantic-line" class="romantic-line">Meri har dhadkan mein bas tum ho</div>
     <div id="love-letter"></div>
+    <div id="together-counter">
+      <strong>Together since</strong>
+      <div class="together-grid">
+        <div class="together-unit"><span id="tc-days">0</span><small>days</small></div>
+        <div class="together-unit"><span id="tc-hours">0</span><small>hrs</small></div>
+        <div class="together-unit"><span id="tc-mins">0</span><small>min</small></div>
+        <div class="together-unit"><span id="tc-secs">0</span><small>sec</small></div>
+      </div>
+      <span id="together-since"></span>
+    </div>
     <div id="promise-card">
       <strong>My promise</strong>
       Prekshu, I promise I will always choose you, protect your smile, and love you more every single day.
     </div>
     <button id="surprise-btn">One more surprise 💝</button>
+    <button id="kiss-btn" type="button">Send a kiss 💋</button>
     <div id="forever-question">
       <strong>One cute question</strong>
       Will you keep smiling with me forever?
@@ -723,11 +976,15 @@
     </div>
     <div id="smile-jar">
       <strong>Prekshu smile jar</strong>
-      <div id="smile-note">Open one tiny reason I adore you.</div>
-      <button id="smile-note-btn" class="forever-btn" type="button">Open a note ✨</button>
+      <div class="flip-card" id="flip-card">
+        <div class="flip-card-inner">
+          <div class="flip-card-front"><span class="flip-emoji">💌</span>Tap to reveal a reason I love you</div>
+          <div class="flip-card-back" id="flip-card-back"></div>
+        </div>
+      </div>
       <span id="smile-jar-count">0 / 7 love notes opened</span>
     </div>
-    <div class="tap-hint">tap the heart for more love · 💗</div>
+    <div class="tap-hint">double-tap anywhere to send a kiss · 💗</div>
   </div>
 
 <script type="importmap">
@@ -748,6 +1005,9 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const MODEL_URL = encodeURI('couple 3d model (1).glb');
 const LOVE_SOUND_URL = encodeURI('love-you-song.mp3');
 const BACKGROUND_SONG_URL = encodeURI('background-song.mp3');
+
+// EDIT ME: set this to the real date (and time, if you know it) you two got together.
+const TOGETHER_SINCE = new Date('2023-02-14T00:00:00');
 
 const canvas = document.getElementById('three-canvas');
 const loadingScreen = document.getElementById('loading-screen');
@@ -772,12 +1032,21 @@ const surpriseBtn = document.getElementById('surprise-btn');
 const foreverQuestion = document.getElementById('forever-question');
 const foreverBtns = document.querySelectorAll('#forever-question .forever-btn');
 const smileJar = document.getElementById('smile-jar');
-const smileNote = document.getElementById('smile-note');
-const smileNoteBtn = document.getElementById('smile-note-btn');
+const flipCard = document.getElementById('flip-card');
+const flipCardBack = document.getElementById('flip-card-back');
 const smileJarCount = document.getElementById('smile-jar-count');
 const topHint = document.getElementById('top-hint');
 const heartsContainer = document.getElementById('hearts-container');
 const celebrationContainer = document.getElementById('celebration-container');
+const starsContainer = document.getElementById('stars-container');
+const musicToggle = document.getElementById('music-toggle');
+const kissBtn = document.getElementById('kiss-btn');
+const togetherCounter = document.getElementById('together-counter');
+const tcDays = document.getElementById('tc-days');
+const tcHours = document.getElementById('tc-hours');
+const tcMins = document.getElementById('tc-mins');
+const tcSecs = document.getElementById('tc-secs');
+const togetherSinceEl = document.getElementById('together-since');
 
 const loveSound = new Audio(LOVE_SOUND_URL);
 loveSound.preload = 'auto';
@@ -790,13 +1059,36 @@ backgroundSong.volume = 0.22;
 
 let backgroundStarted = false;
 
+function updateMusicIcon() {
+  const playing = backgroundStarted && !backgroundSong.paused;
+  musicToggle.textContent = playing ? '🔊' : '🔇';
+  musicToggle.classList.toggle('muted', !playing);
+}
+
 function startBackgroundSong() {
+  musicToggle.classList.add('visible');
   if (backgroundStarted) return;
   backgroundStarted = true;
-  backgroundSong.play().catch(() => {
+  backgroundSong.play().then(updateMusicIcon).catch(() => {
     backgroundStarted = false;
+    updateMusicIcon();
   });
 }
+
+musicToggle.addEventListener('click', (event) => {
+  event.stopPropagation();
+  if (!backgroundStarted) {
+    startBackgroundSong();
+    return;
+  }
+  if (backgroundSong.paused) {
+    backgroundSong.play().catch(() => {});
+  } else {
+    backgroundSong.pause();
+  }
+  setTimeout(updateMusicIcon, 60);
+});
+updateMusicIcon();
 
 function playLoveSound() {
   const sound = loveSound.cloneNode();
@@ -934,6 +1226,7 @@ function finishLoading() {
     loadingScreen.style.opacity = '0';
     setTimeout(() => { loadingScreen.style.display = 'none'; }, 650);
     introScreen.classList.add('visible');
+    musicToggle.classList.add('visible');
   }, 350);
 }
 
@@ -967,7 +1260,6 @@ const smileNotes = [
   'Tum mere din ka sabse beautiful part ho.',
   'Prekshu, tum meri dua ka sabse pyaara answer ho.'
 ];
-let smileNoteIndex = 0;
 
 choiceBtns.forEach((btn) => {
   btn.addEventListener('click', () => {
@@ -1045,10 +1337,13 @@ function revealFinalMessage() {
   startRomanticLines();
   startPetalShower();
   typeLoveLetter();
+  setTimeout(() => togetherCounter.classList.add('visible'), 2400);
   setTimeout(() => promiseCard.classList.add('visible'), 3600);
   setTimeout(() => surpriseBtn.classList.add('visible'), 5200);
+  setTimeout(() => kissBtn.classList.add('visible'), 5200);
   burstHearts(18);
   startAmbientHearts();
+  startTogetherCounter();
   setTimeout(() => {
     canvas.classList.remove('reveal-pulse');
     messageOverlay.classList.remove('love-glow');
@@ -1083,27 +1378,29 @@ foreverBtns.forEach((btn) => {
   });
 });
 
-smileNoteBtn.addEventListener('click', (event) => {
+let flipIndex = 0;
+let flipShowingBack = false;
+flipCard.addEventListener('click', (event) => {
   event.stopPropagation();
-  const note = smileNotes[smileNoteIndex % smileNotes.length];
-  smileNote.classList.add('switching');
+  if (!flipShowingBack) {
+    const note = smileNotes[flipIndex % smileNotes.length];
+    flipCardBack.textContent = note;
+    flipCard.classList.add('flipped');
+    flipShowingBack = true;
+    flipIndex++;
+    const openedCount = Math.min(flipIndex, smileNotes.length);
+    smileJarCount.textContent = `${openedCount} / ${smileNotes.length} love notes opened`;
+    burstHearts(14);
+    createFirework(50, 42);
 
-  setTimeout(() => {
-    smileNote.textContent = note;
-    smileNote.classList.remove('switching');
-  }, 320);
-
-  smileNoteIndex++;
-  const openedCount = Math.min(smileNoteIndex, smileNotes.length);
-  smileJarCount.textContent = `${openedCount} / ${smileNotes.length} love notes opened`;
-  smileNoteBtn.textContent = smileNoteIndex >= smileNotes.length ? 'Read again 💗' : 'Open next note ✨';
-  burstHearts(14);
-  createFirework(50, 42);
-
-  if (smileNoteIndex === smileNotes.length) {
-    romanticLine.textContent = 'Ab bas ek kaam: Prekshu, please smile 💗';
-    launchCelebration();
-    startPetalShower();
+    if (flipIndex === smileNotes.length) {
+      romanticLine.textContent = 'Ab bas ek kaam: Prekshu, please smile 💗';
+      launchCelebration();
+      startPetalShower();
+    }
+  } else {
+    flipCard.classList.remove('flipped');
+    flipShowingBack = false;
   }
 });
 
@@ -1239,6 +1536,122 @@ function startAmbientHearts() {
   if (ambientInterval) return;
   ambientInterval = setInterval(() => spawnHeart(), 900);
 }
+
+function initStars() {
+  const count = window.innerWidth < 640 ? 60 : 90;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    el.className = 'star';
+    el.style.setProperty('--x', Math.random() * 100 + '%');
+    el.style.setProperty('--y', Math.random() * 100 + '%');
+    el.style.setProperty('--size', 1 + Math.random() * 2 + 'px');
+    el.style.setProperty('--o', 0.3 + Math.random() * 0.6);
+    el.style.setProperty('--dur', 2 + Math.random() * 3 + 's');
+    el.style.setProperty('--delay', Math.random() * 4 + 's');
+    starsContainer.appendChild(el);
+  }
+}
+
+function spawnShootingStar() {
+  const el = document.createElement('div');
+  el.className = 'shooting-star';
+  const startX = Math.random() * 55;
+  const startY = Math.random() * 35;
+  const dx = 220 + Math.random() * 140;
+  const dy = dx * 0.62;
+  el.style.setProperty('--x', startX + '%');
+  el.style.setProperty('--y', startY + '%');
+  el.style.setProperty('--dx', dx + 'px');
+  el.style.setProperty('--dy', dy + 'px');
+  starsContainer.appendChild(el);
+  setTimeout(() => el.remove(), 1600);
+}
+
+function startShootingStars() {
+  const schedule = () => {
+    setTimeout(() => {
+      spawnShootingStar();
+      schedule();
+    }, 5000 + Math.random() * 6000);
+  };
+  schedule();
+}
+
+let togetherInterval = null;
+function startTogetherCounter() {
+  if (togetherInterval) return;
+  togetherSinceEl.textContent = 'since ' + TOGETHER_SINCE.toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' });
+  const tick = () => {
+    const diff = Math.max(0, Date.now() - TOGETHER_SINCE.getTime());
+    const totalSeconds = Math.floor(diff / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const mins = Math.floor((totalSeconds % 3600) / 60);
+    const secs = totalSeconds % 60;
+    tcDays.textContent = days;
+    tcHours.textContent = String(hours).padStart(2, '0');
+    tcMins.textContent = String(mins).padStart(2, '0');
+    tcSecs.textContent = String(secs).padStart(2, '0');
+  };
+  tick();
+  togetherInterval = setInterval(tick, 1000);
+}
+
+function spawnKissParticle(x, y) {
+  const el = document.createElement('span');
+  el.className = 'kiss-particle';
+  el.textContent = '💋';
+  const angle = Math.random() * Math.PI * 2;
+  const distance = 60 + Math.random() * 90;
+  el.style.setProperty('--x', x + 'px');
+  el.style.setProperty('--y', y + 'px');
+  el.style.setProperty('--size', 20 + Math.random() * 16 + 'px');
+  el.style.setProperty('--dx', Math.cos(angle) * distance + 'px');
+  el.style.setProperty('--dy', Math.sin(angle) * distance - 60 + 'px');
+  el.style.setProperty('--rot', (Math.random() * 100 - 50) + 'deg');
+  el.style.setProperty('--duration', 1000 + Math.random() * 500 + 'ms');
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1600);
+}
+
+function sendKiss(x, y) {
+  const cx = x !== undefined ? x : window.innerWidth / 2;
+  const cy = y !== undefined ? y : window.innerHeight * 0.55;
+
+  const mark = document.createElement('span');
+  mark.className = 'kiss-mark';
+  mark.textContent = '💋';
+  mark.style.setProperty('--x', cx + 'px');
+  mark.style.setProperty('--y', cy + 'px');
+  mark.style.setProperty('--size', 34 + 'px');
+  mark.style.setProperty('--rot', (Math.random() * 40 - 20) + 'deg');
+  document.body.appendChild(mark);
+  setTimeout(() => mark.remove(), 1500);
+
+  for (let i = 0; i < 8; i++) {
+    setTimeout(() => spawnKissParticle(cx, cy), i * 40);
+  }
+}
+
+kissBtn.addEventListener('click', (event) => {
+  event.stopPropagation();
+  const rect = kissBtn.getBoundingClientRect();
+  sendKiss(rect.left + rect.width / 2, rect.top);
+});
+
+let lastTapTime = 0;
+document.addEventListener('pointerdown', (event) => {
+  if (!messageOverlay.classList.contains('visible')) return;
+  if (event.target.closest('button')) return;
+  const now = Date.now();
+  if (now - lastTapTime < 320) {
+    sendKiss(event.clientX, event.clientY);
+  }
+  lastTapTime = now;
+});
+
+initStars();
+startShootingStars();
 
 function onResize() {
   const w = window.innerWidth;
